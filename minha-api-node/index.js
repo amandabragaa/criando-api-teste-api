@@ -1,19 +1,17 @@
 const express = require("express");
 
 const app = express();
-
 const tarefaRoutes = require("./routes/tarefaRoutes");
 
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
 app.get("/", (req, res) => {
-  res.send("Bem-vindo á API de tarefas");
+  res.send("Bem-vindo a API tarefas!");
 });
 
 app.use(express.json());
-
 app.use("/api", tarefaRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
 });

@@ -1,49 +1,67 @@
-// Controlador para lidar com operações relacionadas às tarefas
-
-// Array simulando uma lista de tarefas
 let tarefas = [];
+let nextId = 1;
 
-// Função para listar tarefas
 const listarTarefas = (req, res) => {
   res.json(tarefas);
 };
 
-//Função para criar uma nova tarefa
+const buscarTarefas = (req, res) => {
+  const { id } = req.params;
+  const tarefa = tarefas.find((tarefa) => tarefa.id === parseInt(id));
+
+  if (!tarefa) {
+    return res.status(404).json({ message: "Tarefa não encontrada" });
+  }
+
+  res.json(tarefa);
+};
+
 const criarTarefa = (req, res) => {
   const { descricao } = req.body;
-  const novaTarefa = { id: tarefas.length + 1, descricao };
+
+  if (!descricao || descricao.trim() === "") {
+    return res.status(400).json({ message: "Descrição é obrigatória" });
+  }
+
+  const novaTarefa = { id: nextId++, descricao };
   tarefas.push(novaTarefa);
   res.status(201).json(novaTarefa);
 };
 
-// Função para atualizar uma tarefa existente
 const atualizarTarefa = (req, res) => {
   const { id } = req.params;
   const { descricao } = req.body;
-  const index = tarefas.findIndex((tarefa) => tarefa.id === parseInt(id));
-  if (index !== -1) {
-    tarefas[index].descricao = descricao;
-    res.json(tarefas[index]);
-  } else {
-    res.status(404).json({ mensagem: "Tarefa não encontrada" });
+
+  if (!descricao || descricao.trim() === "") {
+    return res.status(400).json({ message: "Descrição é obrigatória" });
   }
+
+  const index = tarefas.findIndex((tarefa) => tarefa.id === parseInt(id));
+
+  if (index === -1) {
+    return res.status(404).json({ message: "Tarefa não encontrada" });
+  }
+
+  tarefas[index].descricao = descricao;
+  res.json(tarefas[index]);
 };
 
-// Função para excluir uma tarefa
-const excluirTarefa = (req, res) => {
+const deletarTarefa = (req, res) => {
   const { id } = req.params;
   const index = tarefas.findIndex((tarefa) => tarefa.id === parseInt(id));
+
   if (index !== -1) {
     tarefas.splice(index, 1);
-    res.json({ mensagem: "Tarefa excluida com sucesso" });
+    res.json({ message: "Tarefa deletada com sucesso" });
   } else {
-    res.json({ mensagem: "Tarefa não encontrada" });
+    res.status(404).json({ message: "Tarefa não encontrada" });
   }
 };
 
 module.exports = {
   listarTarefas,
+  buscarTarefas,
   criarTarefa,
   atualizarTarefa,
-  excluirTarefa,
+  deletarTarefa,
 };
